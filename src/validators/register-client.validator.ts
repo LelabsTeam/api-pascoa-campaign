@@ -1,13 +1,12 @@
-import { PascoaController } from "src/controllers/pascoa.controller";
-import { PascoaService } from "../services";
+import { PascoaService } from '../services/pascoa.service';
 
-export function registerClientValidator(props?: any){
-    const requiredField: Array<keyof PascoaService.RegisterClientProps> = ["cell", "cpf", "email", "acceptedTerms"]
-    let errorFields: string[] = []
-    if(!props) return requiredField
-    requiredField.forEach((item) => {  
-        if(Object.hasOwn(props, item)) return
-        errorFields.push(item)
-    })
-    return errorFields
+export function registerClientValidator(props?: any) {
+  const requiredField: Array<keyof PascoaService.RegisterClientProps> = ['cell', 'cpf', 'email', 'acceptedTerms'];
+  const errorFields: string[] = [];
+  if (!props) return requiredField;
+  requiredField.forEach((item) => {
+    // if (Object.hasOwn(props, item)) return;
+    errorFields.push(String(item));
+  });
+  return errorFields;
 }

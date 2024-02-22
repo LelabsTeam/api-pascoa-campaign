@@ -1,5 +1,5 @@
 export type ControllerResponse = {
-    data: any,
-    status: string,
-    message: string,
-}
+  data: any,
+  status: string,
+  message: string,
+};

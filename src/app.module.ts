@@ -1,11 +1,20 @@
-import { Module, Scope } from '@nestjs/common';
+import 'reflect-metadata';
 
-import { MasterDataService, PascoaService } from './services';
-import { PascoaController } from './controllers/pascoa.controller';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { databaseConfig } from './gateways/database/ormconfig';
+import { PascoaModule } from './modules/pascoa.module';
 
 @Module({
-  imports: [],
-  controllers: [PascoaController],
-  providers: [PascoaService, MasterDataService],
+  imports: [
+    ConfigModule.forRoot({ envFilePath: process.env.ENVFILE || '.env.local', isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      useFactory: async () => databaseConfig(process.env.ENVFILE === 'prd'),
+    }),
+    PascoaModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

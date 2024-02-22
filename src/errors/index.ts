@@ -5,3 +5,4 @@ export * from './field-empty';
 export * from './possible-errors'
 export * from './accepted-terms-is-false';
 export * from './user-not-registered-in-form'
+export * from './invalid-email'
