@@ -1,7 +1,7 @@
 
-import { UserAlreadyGetCoupom, CoupomUnvailable, UserAlreadyRegisteredInForm } from "../errors";
+import { UserAlreadyGetCoupom, CoupomUnvailable, UserAlreadyRegisteredInForm, UserNotRegisteredInForm } from "../errors";
 import { PascoaService } from "./pascoa.service";
-import { MasterDataService } from "./masterdata.service";
+import { MasterDataService } from "../repositories/masterdata.repository";
 
 describe("PascoaService", () => {
     let pascoaService: PascoaService
@@ -10,7 +10,7 @@ describe("PascoaService", () => {
     beforeEach(async () => {
         storageService = {
           getCoupom: jest.fn(),
-          verifyUser: jest.fn(),
+          verifyUserCoupom: jest.fn(),
           saveCoupomInUser: jest.fn(),
           saveUserForm: jest.fn(),
           verifyUserAlreadyRegisteredForm: jest.fn()
@@ -18,37 +18,70 @@ describe("PascoaService", () => {
         pascoaService = new PascoaService(storageService);
       });
 
+      const mockVerifyUserReturn = {
+        email: "wellingtonrufino@lelabs.com",
+        cpf: '54060329826',
+        cell: '11968639473'
+      }
+
     it("Should be return redeemed coupom with success", async () => {
         const mockClientEmail = "wellingtonrufino@lelabs.com.br"
         const mockCoupomName = "TEST123"
         
-        jest.spyOn(storageService, "verifyUser").mockImplementation(() =>  Promise.resolve(false))
+
+        jest.spyOn(storageService, "verifyUserAlreadyRegisteredForm").mockImplementation(() => Promise.resolve(mockVerifyUserReturn))  
+        jest.spyOn(storageService, "verifyUserCoupom").mockImplementation(() =>  Promise.resolve(false))
         jest.spyOn(storageService, "getCoupom").mockImplementation(() => Promise.resolve(mockCoupomName))
         jest.spyOn(storageService, "saveCoupomInUser").mockImplementation(() => Promise.resolve())
         
         const res = await pascoaService.redeemCoupom({clientEmail: mockClientEmail});        
-        expect(storageService.verifyUser).toHaveBeenCalledWith(mockClientEmail);
+        expect(storageService.verifyUserCoupom).toHaveBeenCalledWith(mockClientEmail);
         expect(storageService.getCoupom).toHaveBeenCalled();
         expect(storageService.saveCoupomInUser).toHaveBeenCalledWith(mockClientEmail, mockCoupomName, );
         expect(res).toStrictEqual({coupomCode: mockCoupomName})
     })
 
-    it("Should be return redeemed coupom withut sucess because coupom unvailable", async () => {
+    it("Should be return redeemed coupom withut success because coupom unvailable", async () => {
         const mockClientEmail = "wellingtonrufino@lelabs.com.br"
 
-        jest.spyOn(storageService, "verifyUser").mockImplementation(() =>  Promise.resolve(false))
-        jest.spyOn(storageService, "getCoupom").mockImplementation(() => Promise.resolve(null))
-        expect(pascoaService.redeemCoupom({clientEmail: mockClientEmail})).rejects.toThrow(CoupomUnvailable)
-        expect(storageService.verifyUser).toHaveBeenCalledWith(mockClientEmail);
-        expect(storageService.getCoupom).toHaveBeenCalled();
+        
+        jest.spyOn(storageService, "verifyUserAlreadyRegisteredForm").mockImplementation(() => Promise.resolve(mockVerifyUserReturn))  
+        jest.spyOn(storageService, "verifyUserCoupom").mockImplementation(() =>  Promise.resolve(false))
+        jest.spyOn(storageService, "getCoupom").mockImplementation(() => Promise.resolve(null));
+
+        try{
+          await pascoaService.redeemCoupom({clientEmail: mockClientEmail});
+        }catch(err){
+            expect(err).toBeInstanceOf(CoupomUnvailable)
+            expect(storageService.getCoupom).toHaveBeenCalled();
+            expect(storageService.verifyUserCoupom).toHaveBeenCalledWith(mockClientEmail);
+        }
     })
 
     it("Should not be return coupom, because user already get coupom", async () => {
         const mockClientEmail = "wellingtonrufino@lelabs.com.br"
+        
+        jest.spyOn(storageService, "verifyUserAlreadyRegisteredForm").mockImplementation(() => Promise.resolve(mockVerifyUserReturn))  
+        jest.spyOn(storageService, "verifyUserCoupom").mockImplementation(() =>  Promise.resolve(true))     
 
-        jest.spyOn(storageService, "verifyUser").mockImplementation(() =>  Promise.resolve(true))     
-        expect(pascoaService.redeemCoupom({clientEmail: mockClientEmail})).rejects.toThrow(UserAlreadyGetCoupom)
-        expect(storageService.verifyUser).toHaveBeenCalledWith(mockClientEmail);
+        try{
+            await pascoaService.redeemCoupom({clientEmail: mockClientEmail})
+        }
+        catch(err){
+            expect(err).toBeInstanceOf(UserAlreadyGetCoupom)
+            expect(storageService.verifyUserCoupom).toHaveBeenCalledWith(mockClientEmail);
+        }
+    })
+    it("Should not be return coupom, because user not registered in form", async () => {
+        const mockClientEmail = "wellingtonrufino@lelabs.com.br"
+        jest.spyOn(storageService, "verifyUserAlreadyRegisteredForm").mockImplementation(() =>  Promise.resolve(null))  
+
+        try{
+            await pascoaService.redeemCoupom({clientEmail: mockClientEmail})
+        }catch(err){
+            expect(err).toBeInstanceOf(UserNotRegisteredInForm)
+            expect(storageService.verifyUserAlreadyRegisteredForm).toHaveBeenCalledWith({email: mockClientEmail});
+        }
     })
 
     it("should be register client with success", async () => {
@@ -58,7 +91,8 @@ describe("PascoaService", () => {
             email: "wellingtonrufino@lelabs.com",
             acceptedTerms: true,
         }
-
+        
+        jest.spyOn(storageService, "verifyUserAlreadyRegisteredForm").mockImplementation(() => Promise.resolve(null))  
         jest.spyOn(storageService, 'saveUserForm').mockImplementation(() => Promise.resolve())
         const res = await pascoaService.registerClient(mockClientData);
         expect(storageService.saveUserForm).toHaveBeenCalledWith(mockClientData)
@@ -76,7 +110,12 @@ describe("PascoaService", () => {
         const {acceptedTerms, ...mockClientProps} = mockClientData
 
         jest.spyOn(storageService, 'verifyUserAlreadyRegisteredForm').mockImplementation(() => Promise.resolve(mockClientProps))
-        expect(pascoaService.registerClient(mockClientData)).rejects.toThrow(UserAlreadyRegisteredInForm)
-        expect(storageService.verifyUserAlreadyRegisteredForm).toHaveBeenCalledWith(mockClientProps)
+
+        try{
+        await pascoaService.registerClient(mockClientData)
+            }catch(err){
+                expect(err).toBeInstanceOf(UserAlreadyRegisteredInForm)
+                expect(storageService.verifyUserAlreadyRegisteredForm).toHaveBeenCalledWith(mockClientProps)
+            }
     })
 })
