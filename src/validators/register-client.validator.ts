@@ -5,8 +5,8 @@ export function registerClientValidator(props?: any) {
   const errorFields: string[] = [];
   if (!props) return requiredField;
   requiredField.forEach((item) => {
-    // if (Object.hasOwn(props, item)) return;
-    errorFields.push(String(item));
+    if (Object.hasOwn(props, item)) return;
+    errorFields.push(item);
   });
   return errorFields;
 }
