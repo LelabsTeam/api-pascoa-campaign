@@ -8,5 +8,5 @@ export interface IStorageRepository {
   verifyUserAlreadyRegisteredForm(
     props: { email: string, cpf?: string, cell?: string }
   ): Promise<{ email: string, cpf: string, cell: string } | null>
-  getCouponsByEmail(email: string): string[];
+  getCouponsByEmail(email: string): Promise<string | null>;
 }

@@ -57,7 +57,12 @@ export class StorageRepository implements IStorageRepository {
     return null
   }
 
-  getCouponsByEmail(email: string) {
-    return [email];
+  async getCouponsByEmail(email: string): Promise<string | null> {
+    const userTable = DataSource.getRepository(EasterUser);
+    const res = await userTable.findOne({relations: ['coupon'], where: {email, tenant_id: this.banderName}})
+    if(res){
+      return res.coupon.coupon_number
+    }
+    return null
   }
 }

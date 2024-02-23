@@ -167,4 +167,42 @@ describe('StorageRepository', () => {
     const res = await storageService.getCoupom()
     expect(res).toBe(null)
   })
+
+  it("should be get coupon by user", async () => {
+    const mockUserData = {
+      cpf: '53060329826',
+      phone: '11968639473',
+      accepted_terms: true,
+      email: 'wellingtonrufino3@lelabs.com',
+      tenant_id: 'CV',
+    }
+
+    const mockCouponNumber = "COUPONTEST1";
+
+    const user = await userTable.save(mockUserData)
+    const mockTenantId = "CV"; 
+    await couponTable.save({coupon_number: mockCouponNumber, tenant_id: mockTenantId, user, user_email: user.email, redeemed_date: new Date().toISOString()});
+
+    const res = await storageService.getCouponsByEmail(mockUserData.email)
+    expect(res).toEqual(mockCouponNumber)
+  })
+
+  it("should be get coupon by because different tenant ID", async () => {
+    const mockTenantId = "CV"; 
+    const mockUserData = {
+      cpf: '53060329826',
+      phone: '11968639473',
+      accepted_terms: true,
+      email: 'wellingtonrufino3@lelabs.com',
+      tenant_id: 'LB',
+    }
+
+    const mockCouponNumber = "COUPONTEST1";
+
+    const user = await userTable.save(mockUserData)
+    await couponTable.save({coupon_number: mockCouponNumber, tenant_id: mockTenantId, user, user_email: user.email, redeemed_date: new Date().toISOString()});
+
+    const res = await storageService.getCouponsByEmail(mockUserData.email)
+    expect(res).toEqual(null)
+  })
 });
