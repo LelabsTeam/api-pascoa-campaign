@@ -1,5 +1,5 @@
-export class UserAlreadyRegisteredInForm extends Error{
-    constructor(){
-        super();
-    }
+export class UserAlreadyRegisteredInForm extends Error {
+  constructor() {
+    super();
+  }
 }

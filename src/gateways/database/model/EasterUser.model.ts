@@ -4,13 +4,10 @@ import {
   Unique,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  OneToMany,
   JoinColumn,
   OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { v4 as uuid } from 'uuid';
 // eslint-disable-next-line import/no-cycle
 import { EasterCoupon } from './EasterCoupon.model';
 
@@ -38,7 +35,7 @@ export class EasterUser {
   @UpdateDateColumn({ name: 'updated_at' })
     updated_at: Date;
 
-  @OneToOne(() => EasterCoupon,  easterCoupon => easterCoupon.user, { nullable: true})
+  @OneToOne(() => EasterCoupon, (easterCoupon) => easterCoupon.user, { nullable: true })
   @JoinColumn()
-    coupon: EasterCoupon
+    coupon: EasterCoupon;
 }

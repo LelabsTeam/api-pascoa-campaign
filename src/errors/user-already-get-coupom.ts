@@ -1,5 +1,5 @@
-export class UserAlreadyGetCoupom extends Error{
-    constructor(){
-        super();
-    }
+export class UserAlreadyGetCoupom extends Error {
+  constructor() {
+    super();
+  }
 }

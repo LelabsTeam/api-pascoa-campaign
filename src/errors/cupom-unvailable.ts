@@ -1,7 +1,6 @@
-export class CoupomUnvailable extends Error{
-    constructor(){
-        super();
-        this.message = "coupom unvailable"
-    }
-
+export class CoupomUnvailable extends Error {
+  constructor() {
+    super();
+    this.message = 'coupom unvailable';
+  }
 }

@@ -33,7 +33,7 @@ export class EasterCoupon1708574353782 implements MigrationInterface {
           },
           {
             name: 'redeemed_date',
-            type: 'timestamp'
+            type: 'timestamp',
           },
           {
             name: 'created_at',
@@ -59,7 +59,7 @@ export class EasterCoupon1708574353782 implements MigrationInterface {
           referencedTableName: 'easterUser',
           onDelete: 'SET NULL',
           onUpdate: 'CASCADE',
-        })
+        }),
       ],
     );
   }

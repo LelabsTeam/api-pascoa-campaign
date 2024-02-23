@@ -3,11 +3,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
   OneToOne,
-  PrimaryColumn
+  PrimaryColumn,
 } from 'typeorm';
-import { v4 as uuid } from 'uuid';
 // eslint-disable-next-line import/no-cycle
 import { EasterUser } from './EasterUser.model';
 
@@ -17,15 +15,15 @@ export class EasterCoupon {
     tenant_id: string;
 
   @Column({ type: 'varchar', unique: false, nullable: true })
-    user_email: string; 
+    user_email: string;
 
-  @OneToOne(() => EasterUser, easerUser => easerUser.coupon, {nullable: true})
+  @OneToOne(() => EasterUser, (easerUser) => easerUser.coupon, { nullable: true })
     user: EasterUser;
 
   @PrimaryColumn({ type: 'varchar' })
     coupon_number: string;
 
-  @Column({ type: "date", nullable: true })
+  @Column({ type: 'date', nullable: true })
     redeemed_date: string;
 
   @CreateDateColumn({ name: 'created_at' })

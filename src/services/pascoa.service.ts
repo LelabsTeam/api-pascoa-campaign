@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import {
   CoupomUnvailable,
   UserAlreadyGetCoupom,
@@ -7,7 +8,6 @@ import {
 } from '../errors';
 import { IStorageRepository } from '../repositories/istorage.repository';
 import { GetClientCouponsInput } from '../controllers/inputs/GetClientCouponsInput';
-import { REQUEST } from '@nestjs/core';
 
 export namespace PascoaService {
   export type RedeemCoupomProps = {
@@ -33,7 +33,7 @@ export class PascoaService {
   constructor(
     @Inject('IStorageRepository')
     private readonly storageService: IStorageRepository,
-    @Inject(REQUEST) request?: Request
+    @Inject(REQUEST) request?: Request,
   ) {}
 
   async redeemCoupom(
