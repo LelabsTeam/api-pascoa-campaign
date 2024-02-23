@@ -50,7 +50,7 @@ export class StorageRepository implements IStorageRepository {
 
   async getCoupom(): Promise<string | null> {
     const coumpomTable = DataSource.getRepository(EasterCoupon)
-    const res = await coumpomTable.findOne({where: {user_email: IsNull()}})
+    const res = await coumpomTable.findOne({where: {user_email: IsNull(), tenant_id: this.banderName}})
     if(res){
       return res.coupon_number
     }
