@@ -14,7 +14,8 @@ describe("PascoaService", () => {
           saveCoupomInUser: jest.fn(),
           saveUserForm: jest.fn(),
           verifyUserAlreadyRegisteredForm: jest.fn(),
-          getCouponsByEmail: jest.fn()
+          getCouponsByEmail: jest.fn(),
+          banderName: 'CV'
         }
         pascoaService = new PascoaService(storageService);
       });

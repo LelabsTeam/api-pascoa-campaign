@@ -9,6 +9,12 @@ export class EasterUser1708574078488 implements MigrationInterface {
         name: 'easterUser',
         columns: [
           {
+            name: 'tenant_id',
+            type: 'varchar',
+            isNullable: false,
+            isPrimary: false,
+          },
+          {
             name: 'id',
             type: 'uuid',
             isNullable: false,

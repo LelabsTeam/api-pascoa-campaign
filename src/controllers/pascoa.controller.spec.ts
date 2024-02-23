@@ -8,7 +8,12 @@ describe('PascoaController', () => {
   let pascoaService: PascoaService
   
   beforeEach(async () => {
-    const storageService = new StorageRepository();
+
+    const headers = new Headers();
+    headers.append('bander-name', 'cv')
+
+    //@ts-ignore
+    const storageService = new StorageRepository({headers});
     pascoaService = new PascoaService(storageService)
     pascoaController = new PascoaController(pascoaService)
   });

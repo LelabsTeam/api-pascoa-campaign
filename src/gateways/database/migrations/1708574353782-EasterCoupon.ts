@@ -11,6 +11,12 @@ export class EasterCoupon1708574353782 implements MigrationInterface {
         name: 'easterCoupon',
         columns: [
           {
+            name: 'tenant_id',
+            type: 'varchar',
+            isNullable: false,
+            isPrimary: false,
+          },
+          {
             name: 'id',
             type: 'uuid',
             isNullable: false,
@@ -19,6 +25,7 @@ export class EasterCoupon1708574353782 implements MigrationInterface {
           {
             name: 'user_id',
             type: 'uuid',
+            isNullable: true,
           },
           {
             name: 'coupon_number',
@@ -26,8 +33,7 @@ export class EasterCoupon1708574353782 implements MigrationInterface {
           },
           {
             name: 'redeemed_date',
-            type: 'timestamp',
-            default: 'now()',
+            type: 'timestamp'
           },
           {
             name: 'created_at',
@@ -49,19 +55,11 @@ export class EasterCoupon1708574353782 implements MigrationInterface {
         new TableForeignKey({
           name: 'EasterUserCouponById',
           columnNames: ['user_id'],
-          referencedColumnNames: ['id'],
+          referencedColumnNames: ['email'],
           referencedTableName: 'easterUser',
           onDelete: 'SET NULL',
           onUpdate: 'CASCADE',
-        }),
-        // new TableForeignKey({
-        //   name: 'EasterUserCouponByEmail',
-        //   columnNames: ['user_email'],
-        //   referencedColumnNames: ['email'],
-        //   referencedTableName: 'easterUser',
-        //   onDelete: 'SET NULL',
-        //   onUpdate: 'CASCADE',
-        // }),
+        })
       ],
     );
   }

@@ -35,4 +35,4 @@ export const databaseConfig = (isTest = false, migrations = false) => {
     ? dataBaseConfigProd : databaseDevConfig;
 };
 
-export default new DataSource(databaseConfig());
+export default new DataSource(databaseConfig(true));

@@ -3,8 +3,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 // eslint-disable-next-line import/no-cycle
@@ -12,33 +13,24 @@ import { EasterUser } from './EasterUser.model';
 
 @Entity('easterCoupon')
 export class EasterCoupon {
-  @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @Column({ type: 'varchar' })
+    tenant_id: string;
 
-  @Column({ type: 'varchar', unique: true })
-    user_id: string;
+  @Column({ type: 'varchar', unique: false, nullable: true })
+    user_email: string; 
 
-  // @Column({ type: 'varchar', unique: true })
-  //   user_email: string;
-
-  @ManyToOne(() => EasterUser, (easterUser) => easterUser.coupons)
+  @OneToOne(() => EasterUser, easerUser => easerUser.coupon, {nullable: true})
     user: EasterUser;
 
-  @Column({ type: 'int' })
-    coupon_number: number;
+  @PrimaryColumn({ type: 'varchar' })
+    coupon_number: string;
 
-  @CreateDateColumn({ name: 'redeemed_date' })
-    redeemed_date: Date;
+  @Column({ type: "date", nullable: true })
+    redeemed_date: string;
 
   @CreateDateColumn({ name: 'created_at' })
     created_at: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
     updated_at: Date;
-
-  constructor() {
-    if (!this.id) {
-      this.id = uuid();
-    }
-  }
 }
