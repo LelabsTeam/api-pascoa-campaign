@@ -5,8 +5,8 @@ import { REQUEST } from '@nestjs/core';
 import DataSource from '../gateways/database/ormconfig';
 import { EasterUser} from '../gateways/database/model/EasterUser.model'
 import { EasterCoupon} from '../gateways/database/model/EasterCoupon.model'
-import { create } from 'domain';
-import { IsNull, getConnection } from 'typeorm';
+import { IsNull } from 'typeorm';
+import { CoupomUnvailable, UserNotRegisteredInForm } from '../errors';
 
 @Injectable({ scope: Scope.REQUEST })
 
@@ -17,15 +17,9 @@ export class StorageRepository implements IStorageRepository {
     this.banderName = request.headers['bander-name']
   }
 
-  async verifyUserCoupom(_email: string): Promise<boolean> {
-    const userTable = DataSource.getRepository(EasterUser);
-    const {coupon} = await userTable.findOne({relations: ['coupon'], where: {email: _email}});
-    return !!coupon
-  }
-
   async verifyUserAlreadyRegisteredForm(_props: { email: string; cpf?: string; cell?: string; }): Promise<{ email: string; cpf: string; cell: string; } | null> {
     const userTable = DataSource.getRepository(EasterUser);
-    const res = await userTable.findOneBy({email: _props.email});
+    const res = await userTable.findOneBy({email: _props.email, tenant_id: this.banderName});
     if(res) return {cell: res.phone, cpf: res.cpf, email: res.email}
     return null
   }
@@ -38,14 +32,23 @@ export class StorageRepository implements IStorageRepository {
  async saveCoupomInUser(_email: string, _coupomId: string): Promise<void> {
     const coumpomTable = DataSource.getRepository(EasterCoupon)
     const userTable = DataSource.getRepository(EasterUser);
-
-    const user = await userTable.findOneBy({email: _email});
-
-    const coupon = await coumpomTable.findOneBy({coupon_number: _coupomId})
-    coupon.user = user;
+    const user = await userTable.findOneBy({email: _email, tenant_id: this.banderName});
+    const coupon = await coumpomTable.findOneBy({coupon_number: _coupomId, tenant_id: this.banderName})
+    if(!user) throw new UserNotRegisteredInForm();
+    if(!coupon) throw new CoupomUnvailable();
     coupon.user_email = user.email    
+    coupon.user = user
     coupon.redeemed_date = new Date().toISOString()
     await coumpomTable.save(coupon)
+  }
+
+  async verifyUserCoupom(_email: string): Promise<boolean> {
+    const userTable = DataSource.getRepository(EasterUser);
+    const res = await userTable.findOne({relations: ['coupon'], where: {email: _email, tenant_id: this.banderName}});
+    if(res && res.coupon){
+      return true
+    }
+    return false
   }
 
   async getCoupom(): Promise<string | null> {

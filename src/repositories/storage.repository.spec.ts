@@ -3,12 +3,14 @@ import {EasterUser} from '../gateways/database/model/EasterUser.model'
 import {EasterCoupon} from '../gateways/database/model/EasterCoupon.model'
 import { StorageRepository } from './storage.repository';
 import { Repository } from 'typeorm';
+import { CoupomUnvailable, UserNotRegisteredInForm } from '../errors';
 
 describe('StorageRepository', () => {
   let userTable: Repository<EasterUser>
   let couponTable: Repository<EasterCoupon>
+  const DEFAULT_TENANT = "CV"
   const headers = {
-    'bander-name': 'CV'
+    'bander-name': DEFAULT_TENANT
   }
   //@ts-ignore
   const storageService = new StorageRepository({headers});
@@ -35,7 +37,7 @@ describe('StorageRepository', () => {
       phone: '11968639473',
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
-      tenant_id: 'cv'
+      tenant_id: "CV"
     }
 
     await userTable.save(mockUserData)
@@ -44,15 +46,29 @@ describe('StorageRepository', () => {
     expect(res).toStrictEqual({email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf})
   });
 
+  it('should NOT be verify user data, because different tenant ID', async () => {
+    const mockUserData = {
+      cpf: '53060329826',
+      phone: '11968639473',
+      accepted_terms: true,
+      email: 'wellingtonrufino@lelabs.com',
+      tenant_id: 'LB'
+    }
+
+    await userTable.save(mockUserData)
+    const res = await storageService.verifyUserAlreadyRegisteredForm({email: mockUserData.email})
+
+    expect(res).toStrictEqual(null)
+  });
+
   it('should be verify user WITHOUT data', async () => {
     const mockUserData = {
       cpf: '53060329826',
       phone: '11968639473',
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
-      tenant_id: 'cv'
+      tenant_id: DEFAULT_TENANT
     }
-    // await userTable.save(mockUserData)
     const res = await storageService.verifyUserAlreadyRegisteredForm({email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf})
 
     expect(res).toStrictEqual(null)
@@ -64,13 +80,29 @@ describe('StorageRepository', () => {
       phone: '11968639473',
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
-      tenant_id: 'CV',
+      tenant_id: DEFAULT_TENANT,
     }
     const response = await userTable.save(mockUserData);
     await couponTable.save({coupon_number: 'TESTE',user_email: response.email,user:response, tenant_id: 'CV'})
     const res = await storageService.verifyUserCoupom(mockUserData.email);
     expect(res).toBe(true)
   })
+
+  it('should NOT be verify user coupon with data true', async () => {
+    const mockUserData = {
+      cpf: '53060329826',
+      phone: '11968639473',
+      accepted_terms: true,
+      email: 'wellingtonrufino@lelabs.com',
+      tenant_id: 'LB',
+    }
+    const response = await userTable.save(mockUserData);
+    await couponTable.save({coupon_number: 'TESTE',user_email: response.email,user:response, tenant_id: DEFAULT_TENANT})
+    const res = await storageService.verifyUserCoupom(mockUserData.email);
+    expect(res).toBe(false)
+  })
+
+  
 
   it('should be verify user coupon with data false', async () => {
     const mockUserData = {
@@ -108,13 +140,55 @@ describe('StorageRepository', () => {
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'CV',
     }
-    const mockCouponNumber = 'TESTE123'
-
+      const mockCouponNumber = 'TESTE123'
+    
       await userTable.save(mockUserData)
       await couponTable.save({coupon_number: mockCouponNumber, tenant_id: mockUserData.tenant_id})
+
       await storageService.saveCoupomInUser(mockUserData.email, mockCouponNumber);
+      
       const res = await userTable.findOne({relations: ['coupon'], where: {email: mockUserData.email}});
       expect(res.coupon.coupon_number).toBe(mockCouponNumber)
+  })
+
+  it('should NOT be save cupom in user, because tennant id of user is different', async () => {
+    const mockUserData = {
+      cpf: '53060329826',
+      phone: '11968639473',
+      accepted_terms: true,
+      email: 'wellingtonrufino@lelabs.com',
+      tenant_id: "LB",
+    }
+    const mockCouponNumber = 'TESTE123'
+    
+      await userTable.save(mockUserData)
+      await couponTable.save({coupon_number: mockCouponNumber, tenant_id: DEFAULT_TENANT})
+
+      try{
+        await storageService.saveCoupomInUser(mockUserData.email, mockCouponNumber);
+      }catch(err){
+        expect(err).toBeInstanceOf(UserNotRegisteredInForm)
+      }
+  })
+
+  it('should NOT be save cupom in user, because tennant id of coupon is different', async () => {
+    const mockUserData = {
+      cpf: '53060329826',
+      phone: '11968639473',
+      accepted_terms: true,
+      email: 'wellingtonrufino@lelabs.com',
+      tenant_id: DEFAULT_TENANT,
+    }
+    const mockCouponNumber = 'TESTE123'
+    
+      await userTable.save(mockUserData)
+      await couponTable.save({coupon_number: mockCouponNumber, tenant_id: 'LB'})
+
+      try{
+        await storageService.saveCoupomInUser(mockUserData.email, mockCouponNumber);
+      }catch(err){
+        expect(err).toBeInstanceOf(CoupomUnvailable)
+      }
   })
   
   it("should be user get coupon", async () => {

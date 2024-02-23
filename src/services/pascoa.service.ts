@@ -7,6 +7,7 @@ import {
 } from '../errors';
 import { IStorageRepository } from '../repositories/istorage.repository';
 import { GetClientCouponsInput } from '../controllers/inputs/GetClientCouponsInput';
+import { REQUEST } from '@nestjs/core';
 
 export namespace PascoaService {
   export type RedeemCoupomProps = {
@@ -32,6 +33,7 @@ export class PascoaService {
   constructor(
     @Inject('IStorageRepository')
     private readonly storageService: IStorageRepository,
+    @Inject(REQUEST) request?: Request
   ) {}
 
   async redeemCoupom(
@@ -40,7 +42,6 @@ export class PascoaService {
     const userNotRegisteredInForm = await this.storageService.verifyUserAlreadyRegisteredForm({
       email: props.clientEmail,
     });
-
     if (!userNotRegisteredInForm) throw new UserNotRegisteredInForm();
 
     const userAlreadyGetCoupom = await this.storageService.verifyUserCoupom(

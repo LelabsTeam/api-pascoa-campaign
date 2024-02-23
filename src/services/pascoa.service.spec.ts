@@ -1,11 +1,12 @@
 
-import { UserAlreadyGetCoupom, CoupomUnvailable, UserAlreadyRegisteredInForm, UserNotRegisteredInForm } from "../errors";
+import { UserAlreadyGetCoupom, CoupomUnvailable, UserAlreadyRegisteredInForm, UserNotRegisteredInForm, WrongTennantId } from "../errors";
 import { PascoaService } from "./pascoa.service";
 import { StorageRepository } from "../repositories/storage.repository";
 
 describe("PascoaService", () => {
     let pascoaService: PascoaService
     let storageService: StorageRepository
+    const DEFAULT_TENANT = "CV";
 
     beforeEach(async () => {
         storageService = {
@@ -17,7 +18,11 @@ describe("PascoaService", () => {
           getCouponsByEmail: jest.fn(),
           banderName: 'CV'
         }
-        pascoaService = new PascoaService(storageService);
+        const headers = {
+            'bander-name': DEFAULT_TENANT
+          }
+          //@ts-ignore
+        pascoaService = new PascoaService(storageService, {headers});
       });
 
       const mockVerifyUserReturn = {
@@ -120,4 +125,5 @@ describe("PascoaService", () => {
                 expect(storageService.verifyUserAlreadyRegisteredForm).toHaveBeenCalledWith(mockClientProps)
             }
     })
+
 })
