@@ -1,5 +1,5 @@
 export interface IStorageRepository {
-  getCoupom(): Promise<null | string>
+  getCoupom(): Promise<null | {expireDate: Date, code: string}>
   saveCoupomInUser(email: string, coupomId: string): Promise<void>
   saveUserForm(
     props: { email: string, cpf: string, cell: string, acceptedTerms: boolean }

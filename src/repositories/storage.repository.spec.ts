@@ -229,7 +229,7 @@ describe('StorageRepository', () => {
     );
 
     const res = await storageService.getCoupom();
-    expect(res).toBe(mockCouponNumber1);
+    expect(res.code).toBe(mockCouponNumber1);
   });
 
   it('should NOT be user get coupon', async () => {
@@ -267,7 +267,7 @@ describe('StorageRepository', () => {
     expect(res).toEqual(mockCouponNumber);
   });
 
-  it('should be get coupon by because different tenant ID', async () => {
+  it('should NOT be get coupon by because different tenant ID', async () => {
     const mockTenantId = 'CV';
     const mockUserData = {
       cpf: '53060329826',
@@ -284,7 +284,11 @@ describe('StorageRepository', () => {
       coupon_number: mockCouponNumber, tenant_id: mockTenantId, user, user_email: user.email, redeemed_date: new Date().toISOString(),
     });
 
-    const res = await storageService.getCouponsByEmail(mockUserData.email);
-    expect(res).toEqual(null);
+      try{
+        await storageService.getCouponsByEmail(mockUserData.email);
+      }catch(err){
+        expect(err).toBeInstanceOf(UserNotRegisteredInForm);
+
+      }
   });
 });

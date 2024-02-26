@@ -20,8 +20,6 @@ export class StorageRepository implements IStorageRepository {
   async verifyUserAlreadyRegisteredForm(_props: { email: string; cpf?: string; cell?: string; }): Promise<{ email: string; cpf: string; cell: string; } | null> {
     const userTable = DataSource.getRepository(EasterUser);
     const res = await userTable.findOneBy({ email: _props.email, tenant_id: this.banderName });
-
-    console.log(res)
     if (res) return { cell: res.phone, cpf: res.cpf, email: res.email };
     return null;
   }
@@ -49,19 +47,20 @@ export class StorageRepository implements IStorageRepository {
   async verifyUserCoupom(_email: string): Promise<boolean> {
     const userTable = DataSource.getRepository(EasterUser);
     const res = await userTable.findOne({ relations: ['coupon'], where: { email: _email, tenant_id: this.banderName } });
-
-    console.log(res)
     if (res && res.coupon) {
       return true;
     }
     return false;
   }
 
-  async getCoupom(): Promise<string | null> {
+  async getCoupom(): Promise<{expireDate: Date, code: string} | null> {
     const coumpomTable = DataSource.getRepository(EasterCoupon);
     const res = await coumpomTable.findOne({ where: { user_email: IsNull(), tenant_id: this.banderName } });
     if (res) {
-      return res.coupon_number;
+      return {
+        code: res.coupon_number,
+        expireDate: res.created_at
+      }
     }
     return null;
   }

@@ -53,10 +53,15 @@ export class PascoaService {
     const coupomCode = await this.storageService.getCoupom();
 
     if (!coupomCode) throw new CoupomUnvailable();
+    
+    const currentDate = new Date(new Date().toISOString().split('T')[0]).getTime();
+    const couponExpireDate =  new Date(coupomCode.expireDate.toISOString().split('T')[0]).getTime();
 
-    await this.storageService.saveCoupomInUser(props.clientEmail, coupomCode);
+    if(currentDate > couponExpireDate) throw new CoupomUnvailable()
 
-    return { coupomCode };
+    await this.storageService.saveCoupomInUser(props.clientEmail, coupomCode.code);
+
+    return { coupomCode: coupomCode.code };
   }
 
   async registerClient(

@@ -25,7 +25,6 @@ export class PascoaController {
         message: 'coupom redeemed with success',
       };
     } catch (err) {
-      console.log(err)
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
       return {
         data: null,
@@ -50,7 +49,6 @@ export class PascoaController {
       };
     } catch (err) {
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
-      console.log(err)
       return {
         data: null,
         status: 'error',

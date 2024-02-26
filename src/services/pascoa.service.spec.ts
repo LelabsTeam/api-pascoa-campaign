@@ -39,7 +39,7 @@ describe('PascoaService', () => {
 
     jest.spyOn(storageService, 'verifyUserAlreadyRegisteredForm').mockImplementation(() => Promise.resolve(mockVerifyUserReturn));
     jest.spyOn(storageService, 'verifyUserCoupom').mockImplementation(() => Promise.resolve(false));
-    jest.spyOn(storageService, 'getCoupom').mockImplementation(() => Promise.resolve(mockCoupomName));
+    jest.spyOn(storageService, 'getCoupom').mockImplementation(() => Promise.resolve({code: mockCoupomName, expireDate: new Date()}));
     jest.spyOn(storageService, 'saveCoupomInUser').mockImplementation(() => Promise.resolve());
 
     const res = await pascoaService.redeemCoupom({ clientEmail: mockClientEmail });
@@ -62,6 +62,7 @@ describe('PascoaService', () => {
       expect(err).toBeInstanceOf(CoupomUnvailable);
       expect(storageService.getCoupom).toHaveBeenCalled();
       expect(storageService.verifyUserCoupom).toHaveBeenCalledWith(mockClientEmail);
+      return
     }
   });
 
@@ -76,6 +77,7 @@ describe('PascoaService', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(UserAlreadyGetCoupom);
       expect(storageService.verifyUserCoupom).toHaveBeenCalledWith(mockClientEmail);
+      return
     }
   });
   it('Should not be return coupom, because user not registered in form', async () => {
@@ -87,6 +89,7 @@ describe('PascoaService', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(UserNotRegisteredInForm);
       expect(storageService.verifyUserAlreadyRegisteredForm).toHaveBeenCalledWith({ email: mockClientEmail });
+      return
     }
   });
 
@@ -122,6 +125,30 @@ describe('PascoaService', () => {
     } catch (err) {
       expect(err).toBeInstanceOf(UserAlreadyRegisteredInForm);
       expect(storageService.verifyUserAlreadyRegisteredForm).toHaveBeenCalledWith(mockClientProps);
+      return
     }
+  });
+
+  it('should NOT be redeem coupon, because coupon expired', async () => {
+    const mockClientData = {
+      cpf: '53060329827',
+      cell: '11968639473',
+      email: 'wellingtonrufino@lelabs.com',
+      acceptedTerms: true,
+    };
+
+    const { acceptedTerms, ...mockClientProps } = mockClientData;
+    const MOCK_COUPON = 'teste123';
+
+    jest.spyOn(storageService, 'verifyUserAlreadyRegisteredForm').mockImplementation(() => Promise.resolve(mockClientProps));
+    jest.spyOn(storageService, "verifyUserCoupom").mockImplementation(() => Promise.resolve(false))
+    jest.spyOn(storageService, 'getCoupom').mockImplementation(() => Promise.resolve({code: MOCK_COUPON, expireDate: new Date(2024, 1, 25)}))
+
+    try {
+      await pascoaService.redeemCoupom({clientEmail: mockClientData.email});
+    } catch (err) {
+      return expect(err).toBeInstanceOf(CoupomUnvailable);
+    }
+    expect(false).toBeTruthy()
   });
 });
