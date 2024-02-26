@@ -75,4 +75,8 @@ export class PascoaService {
     const coupons = await this.storageService.getCouponsByEmail(clientEmail);
     return coupons;
   }
+
+  async saveCoupons(input: string[]){
+    await this.storageService.saveCoupons(input)
+  }
 }

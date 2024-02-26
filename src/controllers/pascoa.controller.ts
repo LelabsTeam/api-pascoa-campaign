@@ -7,11 +7,14 @@ import { ControllerResponse } from './types';
 import { POSSIBLE_APLICATION_ERRORS, FieldIsEmpty } from '../errors';
 import { registerClientValidator } from '../validators/register-client.validator';
 
+import DataSource from '../gateways/database/ormconfig'
+import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
+
 @Controller('/pascoa-api')
 export class PascoaController {
   constructor(private readonly pascoaService: PascoaService) {}
 
-  @Post('/redeem-coupom')
+  @Post('/redeem-coupon')
   async redeemCoupom(@Body() props?: PascoaService.RedeemCoupomProps): Promise<ControllerResponse> {
     try {
       if (!props?.clientEmail) throw new FieldIsEmpty(['clientEmail']);
@@ -22,6 +25,7 @@ export class PascoaController {
         message: 'coupom redeemed with success',
       };
     } catch (err) {
+      console.log(err)
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
       return {
         data: null,
@@ -46,6 +50,7 @@ export class PascoaController {
       };
     } catch (err) {
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
+      console.log(err)
       return {
         data: null,
         status: 'error',
@@ -54,10 +59,34 @@ export class PascoaController {
     }
   }
 
-  @Get('/coupons/:email')
-  getUserCoupons(@Param() input: GetClientCouponsInput) {
-    return this.pascoaService.getClientCoupons(input);
+  @Get('/coupons/:clientEmail')
+  async getUserCoupons(@Param() input: GetClientCouponsInput) {
+    try{
+      const res = await this.pascoaService.getClientCoupons(input);
+      return {
+        data: res,
+        status: "success",
+        message: "get coupon user with success"
+      }
+    }catch(err){
+      const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
+      return {
+        data: null,
+        status: 'error',
+        message: isApplicationError ? err.message : 'internal server error',
+      };
+    }
   }
+
+  // @Post("/coupons")
+  // async addCoupons(@Body() input: any){
+  //   try{
+  //       await this.pascoaService.saveCoupons(input.coupons)
+  //   }catch(err){
+  //     console.log(err)
+  //   }
+  //   return
+  // }
 
   @Get('/test')
   healthcheck(): string {

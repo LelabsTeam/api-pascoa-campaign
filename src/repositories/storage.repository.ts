@@ -20,6 +20,8 @@ export class StorageRepository implements IStorageRepository {
   async verifyUserAlreadyRegisteredForm(_props: { email: string; cpf?: string; cell?: string; }): Promise<{ email: string; cpf: string; cell: string; } | null> {
     const userTable = DataSource.getRepository(EasterUser);
     const res = await userTable.findOneBy({ email: _props.email, tenant_id: this.banderName });
+
+    console.log(res)
     if (res) return { cell: res.phone, cpf: res.cpf, email: res.email };
     return null;
   }
@@ -47,6 +49,8 @@ export class StorageRepository implements IStorageRepository {
   async verifyUserCoupom(_email: string): Promise<boolean> {
     const userTable = DataSource.getRepository(EasterUser);
     const res = await userTable.findOne({ relations: ['coupon'], where: { email: _email, tenant_id: this.banderName } });
+
+    console.log(res)
     if (res && res.coupon) {
       return true;
     }
@@ -65,9 +69,18 @@ export class StorageRepository implements IStorageRepository {
   async getCouponsByEmail(email: string): Promise<string | null> {
     const userTable = DataSource.getRepository(EasterUser);
     const res = await userTable.findOne({ relations: ['coupon'], where: { email, tenant_id: this.banderName } });
-    if (res) {
+
+
+    if(!res) throw new UserNotRegisteredInForm();
+    if (res && res.coupon) {
       return res.coupon.coupon_number;
     }
     return null;
+  }
+
+  async saveCoupons(coupons: string[]): Promise<void>{
+    const coumpomTable = DataSource.getRepository(EasterCoupon);
+    const formatCoupons = coupons.map(item => ({coupon_number: item, tenant_id: this.banderName}))
+    coumpomTable.save(formatCoupons)
   }
 }

@@ -9,4 +9,5 @@ export interface IStorageRepository {
     props: { email: string, cpf?: string, cell?: string }
   ): Promise<{ email: string, cpf: string, cell: string } | null>
   getCouponsByEmail(email: string): Promise<string | null>;
+  saveCoupons(input: string[]): Promise<void>
 }

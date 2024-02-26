@@ -18,6 +18,7 @@ describe('PascoaService', () => {
       verifyUserAlreadyRegisteredForm: jest.fn(),
       getCouponsByEmail: jest.fn(),
       banderName: 'CV',
+      saveCoupons: jest.fn(),
     };
     const headers = {
       'bander-name': DEFAULT_TENANT,
