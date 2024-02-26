@@ -12,12 +12,11 @@ import {
 import { EasterCoupon } from './EasterCoupon.model';
 
 @Entity('easterUser')
-@Unique(['email'])
 export class EasterUser {
-  @Column({ type: 'varchar' })
+  @PrimaryColumn({ type: 'varchar' })
     tenant_id: string;
 
-  @PrimaryColumn({ type: 'varchar', unique: true })
+  @PrimaryColumn({ type: 'varchar' })
     email: string;
 
   @Column({ type: 'boolean' })
