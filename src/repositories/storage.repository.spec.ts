@@ -1,10 +1,9 @@
-import { Repository } from 'typeorm';
+import { Repository  } from 'typeorm';
 import DataSource from '../gateways/database/ormconfig';
 import { EasterUser } from '../gateways/database/model/EasterUser.model';
 import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
 import { StorageRepository } from './storage.repository';
 import { CoupomUnvailable, UserNotRegisteredInForm } from '../errors';
-
 describe('StorageRepository', () => {
   let userTable: Repository<EasterUser>;
   let couponTable: Repository<EasterCoupon>;
@@ -15,6 +14,7 @@ describe('StorageRepository', () => {
   // @ts-ignore
   const storageService = new StorageRepository({ headers });
   beforeAll(async () => {
+
     await DataSource.initialize();
     userTable = DataSource.getRepository(EasterUser);
     couponTable = DataSource.getRepository(EasterCoupon);
@@ -23,9 +23,11 @@ describe('StorageRepository', () => {
   afterEach(async () => {
     try {
       await userTable.clear();
-      await couponTable.clear();
+      await couponTable.query(`SET FOREIGN_KEY_CHECKS = 0`);
+      await couponTable.query(`TRUNCATE TABLE eastercoupon`);
+      await couponTable.query(`SET FOREIGN_KEY_CHECKS = 1`);
     } catch (err) {
-      console.log(err);
+      console.log('error:', err);
     }
   });
 

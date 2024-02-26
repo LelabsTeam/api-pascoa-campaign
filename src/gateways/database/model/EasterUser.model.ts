@@ -11,7 +11,7 @@ import {
 // eslint-disable-next-line import/no-cycle
 import { EasterCoupon } from './EasterCoupon.model';
 
-@Entity('easterUser')
+@Entity('easteruser')
 export class EasterUser {
   @PrimaryColumn({ type: 'varchar' })
     tenant_id: string;
@@ -34,7 +34,7 @@ export class EasterUser {
   @UpdateDateColumn({ name: 'updated_at' })
     updated_at: Date;
 
-  @OneToOne(() => EasterCoupon, (easterCoupon) => easterCoupon.user, { nullable: true })
+  @OneToOne(() => EasterCoupon, (easterCoupon) => easterCoupon.user, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn()
     coupon: EasterCoupon;
 }

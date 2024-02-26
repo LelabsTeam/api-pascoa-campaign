@@ -9,7 +9,7 @@ import {
 // eslint-disable-next-line import/no-cycle
 import { EasterUser } from './EasterUser.model';
 
-@Entity('easterCoupon')
+@Entity('eastercoupon')
 export class EasterCoupon {
   @Column({ type: 'varchar' })
     tenant_id: string;
@@ -17,13 +17,13 @@ export class EasterCoupon {
   @Column({ type: 'varchar', unique: false, nullable: true })
     user_email: string;
 
-  @OneToOne(() => EasterUser, (easerUser) => easerUser.coupon, { nullable: true })
+  @OneToOne(() => EasterUser, (easerUser) => easerUser.coupon, { nullable: true, onDelete: 'SET NULL' })
     user: EasterUser;
 
   @PrimaryColumn({ type: 'varchar' })
     coupon_number: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'timestamp', nullable: true })
     redeemed_date: string;
 
   @CreateDateColumn({ name: 'created_at' })
