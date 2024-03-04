@@ -102,7 +102,7 @@ export class PascoaService {
   }
 
   private async waitTurn(key: string, id: string, cacheValue: {
-    id: `${string}-${string}-${string}-${string}-${string}`;
+    id: string;
     created_at: string;
   }) {
     let myTurn = false;
