@@ -53,14 +53,14 @@ export class StorageRepository implements IStorageRepository {
     return false;
   }
 
-  async getCoupom(): Promise<{expireDate: Date, code: string} | null> {
+  async getCoupom(): Promise<{ expireDate: Date, code: string } | null> {
     const coumpomTable = DataSource.getRepository(EasterCoupon);
     const res = await coumpomTable.findOne({ where: { user_email: IsNull(), tenant_id: this.banderName } });
     if (res) {
       return {
         code: res.coupon_number,
-        expireDate: res.created_at
-      }
+        expireDate: res.created_at,
+      };
     }
     return null;
   }
@@ -69,17 +69,16 @@ export class StorageRepository implements IStorageRepository {
     const userTable = DataSource.getRepository(EasterUser);
     const res = await userTable.findOne({ relations: ['coupon'], where: { email, tenant_id: this.banderName } });
 
-
-    if(!res) throw new UserNotRegisteredInForm();
+    if (!res) throw new UserNotRegisteredInForm();
     if (res && res.coupon) {
       return res.coupon.coupon_number;
     }
     return null;
   }
 
-  async saveCoupons(coupons: string[]): Promise<void>{
+  async saveCoupons(coupons: string[]): Promise<void> {
     const coumpomTable = DataSource.getRepository(EasterCoupon);
-    const formatCoupons = coupons.map(item => ({coupon_number: item, tenant_id: this.banderName}))
-    coumpomTable.save(formatCoupons)
+    const formatCoupons = coupons.map((item) => ({ coupon_number: item, tenant_id: this.banderName }));
+    coumpomTable.save(formatCoupons);
   }
 }

@@ -7,9 +7,6 @@ import { ControllerResponse } from './types';
 import { POSSIBLE_APLICATION_ERRORS, FieldIsEmpty } from '../errors';
 import { registerClientValidator } from '../validators/register-client.validator';
 
-import DataSource from '../gateways/database/ormconfig'
-import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
-
 @Controller('/pascoa-api')
 export class PascoaController {
   constructor(private readonly pascoaService: PascoaService) {}
@@ -59,14 +56,14 @@ export class PascoaController {
 
   @Get('/coupons/:clientEmail')
   async getUserCoupons(@Param() input: GetClientCouponsInput) {
-    try{
+    try {
       const res = await this.pascoaService.getClientCoupons(input);
       return {
         data: res,
-        status: "success",
-        message: "get coupon user with success"
-      }
-    }catch(err){
+        status: 'success',
+        message: 'get coupon user with success',
+      };
+    } catch (err) {
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
       return {
         data: null,
