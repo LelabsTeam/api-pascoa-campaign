@@ -9,7 +9,7 @@ describe('PascoaController', () => {
 
   beforeEach(async () => {
     const headers = new Headers();
-    headers.append('bander-name', 'cv');
+    headers.append('flag-name', 'cv');
 
     // @ts-ignore
     const storageService = new StorageRepository({ headers });

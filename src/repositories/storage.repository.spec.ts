@@ -9,12 +9,11 @@ describe('StorageRepository', () => {
   let couponTable: Repository<EasterCoupon>;
   const DEFAULT_TENANT = 'CV';
   const headers = {
-    'bander-name': DEFAULT_TENANT,
+    'flag-name': DEFAULT_TENANT,
   };
   // @ts-ignore
   const storageService = new StorageRepository({ headers });
   beforeAll(async () => {
-
     await DataSource.initialize();
     userTable = DataSource.getRepository(EasterUser);
     couponTable = DataSource.getRepository(EasterCoupon);
@@ -290,7 +289,6 @@ describe('StorageRepository', () => {
         await storageService.getCouponsByEmail(mockUserData.email);
       }catch(err){
         expect(err).toBeInstanceOf(UserNotRegisteredInForm);
-
       }
   });
 });

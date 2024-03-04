@@ -1,7 +1,6 @@
 import {
   Entity,
   Column,
-  Unique,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,

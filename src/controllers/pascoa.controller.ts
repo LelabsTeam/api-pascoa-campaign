@@ -7,9 +7,6 @@ import { ControllerResponse } from './types';
 import { POSSIBLE_APLICATION_ERRORS, FieldIsEmpty } from '../errors';
 import { registerClientValidator } from '../validators/register-client.validator';
 
-import DataSource from '../gateways/database/ormconfig'
-import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
-
 @Controller('/pascoa-api')
 export class PascoaController {
   constructor(private readonly pascoaService: PascoaService) {}

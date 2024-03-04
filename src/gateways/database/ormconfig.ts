@@ -1,4 +1,4 @@
-import { DataSource, DataSourceOptions, Connection } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { EasterUser } from './model/EasterUser.model';
 import { EasterCoupon } from './model/EasterCoupon.model';
@@ -29,7 +29,7 @@ export const databaseConfig = (migrations = false) => {
     migrations: migrations ? ['./src/database/migrations/*.{ts,js}'] : [],
   } as DataSourceOptions;
   
-  return process.env.DATABASE_ENV === 'prod'
+    return process.env.DATABASE_ENV === 'prod'
     ? dataBaseConfigProd : databaseDevConfig;
 };
 
