@@ -118,9 +118,9 @@ export class PascoaService {
       myTurn = id === oldestRequestId;
       if (!myTurn) {
         // eslint-disable-next-line no-await-in-loop
-        await sleep(150);
-        waitingTime += 150;
-        if (waitingTime >= 1200) {
+        await sleep(300);
+        waitingTime += 300;
+        if (waitingTime >= 2400) {
           // eslint-disable-next-line no-await-in-loop
           await this.cacheClient.removeArrayItem({ key, value: cacheValue });
           throw new Error('Tente novamente amanhã');
