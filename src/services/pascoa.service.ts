@@ -136,6 +136,7 @@ export class PascoaService {
     const user = await this.storageService.verifyUserAlreadyRegisteredForm(
       verifyUserProps,
     );
+
     if (user) throw new UserAlreadyRegisteredInForm();
     await this.storageService.saveUserForm(props);
   }

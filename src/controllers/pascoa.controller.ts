@@ -23,6 +23,7 @@ export class PascoaController {
       };
     } catch (err) {
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
+
       return {
         data: null,
         status: 'error',

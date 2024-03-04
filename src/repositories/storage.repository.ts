@@ -26,7 +26,7 @@ export class StorageRepository implements IStorageRepository {
 
   async saveUserForm(_props: { email: string; cpf: string; cell: string; acceptedTerms: boolean; }): Promise<void> {
     const userTable = DataSource.getRepository(EasterUser);
-    await userTable.save({
+    const saved = await userTable.save({
       accepted_terms: _props.acceptedTerms, cpf: _props.cpf, email: _props.email, phone: _props.cell, tenant_id: this.banderName,
     });
   }
