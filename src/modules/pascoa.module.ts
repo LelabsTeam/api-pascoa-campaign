@@ -5,6 +5,7 @@ import { StorageRepository } from 'src/repositories/storage.repository';
 import { PascoaService } from 'src/services/pascoa.service';
 import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
 import { EasterUser } from '../gateways/database/model/EasterUser.model';
+import { cacheGateway } from '../gateways/database/cache-gateway';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EasterUser } from '../gateways/database/model/EasterUser.model';
       provide: 'IStorageRepository',
       useClass: StorageRepository,
     },
+    ...cacheGateway,
     PascoaService,
   ],
 })

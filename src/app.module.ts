@@ -10,7 +10,7 @@ import { PascoaModule } from './modules/pascoa.module';
   imports: [
     ConfigModule.forRoot({ envFilePath: process.env.ENVFILE || '.env.local', isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      useFactory: async () => databaseConfig(process.env.ENVFILE === 'dev'),
+      useFactory: async () => databaseConfig(process.env.ENVFILE !== '.env'),
     }),
     PascoaModule,
   ],

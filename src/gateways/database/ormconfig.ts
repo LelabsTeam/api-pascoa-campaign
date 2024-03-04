@@ -28,8 +28,8 @@ export const databaseConfig = (migrations = false) => {
     logging: false,
     migrations: migrations ? ['./src/database/migrations/*.{ts,js}'] : [],
   } as DataSourceOptions;
-  
-    return process.env.DATABASE_ENV === 'prod'
+
+  return process.env.DATABASE_ENV === 'prd'
     ? dataBaseConfigProd : databaseDevConfig;
 };
 

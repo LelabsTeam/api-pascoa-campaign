@@ -40,9 +40,15 @@ describe('StorageRepository', () => {
     };
 
     await userTable.save(mockUserData);
-    const res = await storageService.verifyUserAlreadyRegisteredForm({ email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf });
+    const res = await storageService
+      .verifyUserAlreadyRegisteredForm({
+        email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf,
+      });
 
-    expect(res).toStrictEqual({ email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf });
+    expect(res)
+      .toStrictEqual({
+        email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf,
+      });
   });
 
   it('should NOT be verify user data, because different tenant ID', async () => {
@@ -68,7 +74,10 @@ describe('StorageRepository', () => {
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: DEFAULT_TENANT,
     };
-    const res = await storageService.verifyUserAlreadyRegisteredForm({ email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf });
+    const res = await storageService
+      .verifyUserAlreadyRegisteredForm({
+        email: mockUserData.email, cell: mockUserData.phone, cpf: mockUserData.cpf,
+      });
 
     expect(res).toStrictEqual(null);
   });
@@ -261,7 +270,11 @@ describe('StorageRepository', () => {
     const user = await userTable.save(mockUserData);
     const mockTenantId = 'CV';
     await couponTable.save({
-      coupon_number: mockCouponNumber, tenant_id: mockTenantId, user, user_email: user.email, redeemed_date: new Date().toISOString(),
+      coupon_number: mockCouponNumber,
+      tenant_id: mockTenantId,
+      user,
+      user_email: user.email,
+      redeemed_date: new Date().toISOString(),
     });
 
     const res = await storageService.getCouponsByEmail(mockUserData.email);
@@ -282,7 +295,11 @@ describe('StorageRepository', () => {
 
     const user = await userTable.save(mockUserData);
     await couponTable.save({
-      coupon_number: mockCouponNumber, tenant_id: mockTenantId, user, user_email: user.email, redeemed_date: new Date().toISOString(),
+      coupon_number: mockCouponNumber,
+      tenant_id: mockTenantId,
+      user,
+      user_email: user.email,
+      redeemed_date: new Date().toISOString(),
     });
 
       try{
