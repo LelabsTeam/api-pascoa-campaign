@@ -14,7 +14,7 @@ export class StorageRepository implements IStorageRepository {
   banderName: 'CV' | 'LB';
 
   constructor(@Inject(REQUEST) request?: Request) {
-    this.banderName = request.headers['bander-name'];
+    this.banderName = request.headers['flag-name'];
   }
 
   async verifyUserAlreadyRegisteredForm(_props: { email: string; cpf?: string; cell?: string; }): Promise<{ email: string; cpf: string; cell: string; } | null> {
@@ -78,7 +78,9 @@ export class StorageRepository implements IStorageRepository {
 
   async saveCoupons(coupons: string[]): Promise<void> {
     const coumpomTable = DataSource.getRepository(EasterCoupon);
-    const formatCoupons = coupons.map((item) => ({ coupon_number: item, tenant_id: this.banderName }));
+
+    const formatCoupons = coupons.map(item => ({coupon_number: item, tenant_id: this.banderName}));
+
     coumpomTable.save(formatCoupons);
   }
 }

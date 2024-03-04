@@ -1,16 +1,15 @@
-import { Repository } from 'typeorm';
+import { Repository  } from 'typeorm';
 import DataSource from '../gateways/database/ormconfig';
 import { EasterUser } from '../gateways/database/model/EasterUser.model';
 import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
 import { StorageRepository } from './storage.repository';
 import { CoupomUnvailable, UserNotRegisteredInForm } from '../errors';
-
 describe('StorageRepository', () => {
   let userTable: Repository<EasterUser>;
   let couponTable: Repository<EasterCoupon>;
   const DEFAULT_TENANT = 'CV';
   const headers = {
-    'bander-name': DEFAULT_TENANT,
+    'flag-name': DEFAULT_TENANT,
   };
   // @ts-ignore
   const storageService = new StorageRepository({ headers });
@@ -23,9 +22,11 @@ describe('StorageRepository', () => {
   afterEach(async () => {
     try {
       await userTable.clear();
-      await couponTable.clear();
+      await couponTable.query(`SET FOREIGN_KEY_CHECKS = 0`);
+      await couponTable.query(`TRUNCATE TABLE eastercoupon`);
+      await couponTable.query(`SET FOREIGN_KEY_CHECKS = 1`);
     } catch (err) {
-      console.log(err);
+      console.log('error:', err);
     }
   });
 
@@ -301,10 +302,10 @@ describe('StorageRepository', () => {
       redeemed_date: new Date().toISOString(),
     });
 
-    try {
-      await storageService.getCouponsByEmail(mockUserData.email);
-    } catch (err) {
-      expect(err).toBeInstanceOf(UserNotRegisteredInForm);
-    }
+      try{
+        await storageService.getCouponsByEmail(mockUserData.email);
+      }catch(err){
+        expect(err).toBeInstanceOf(UserNotRegisteredInForm);
+      }
   });
 });

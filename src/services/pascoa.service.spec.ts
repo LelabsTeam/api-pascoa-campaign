@@ -21,7 +21,7 @@ describe('PascoaService', () => {
       saveCoupons: jest.fn(),
     };
     const headers = {
-      'bander-name': DEFAULT_TENANT,
+      'flag-name': DEFAULT_TENANT,
     };
     // @ts-ignore
     pascoaService = new PascoaService(storageService, { headers });
