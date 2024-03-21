@@ -1,5 +1,5 @@
 # Use a imagem oficial do Node.js
-FROM node:latest
+FROM node:21-alpine
 
 #
 # DataDog Tracer
@@ -27,6 +27,8 @@ RUN yarn
 
 COPY . .
 
+RUN yarn build
+
 EXPOSE 3000
 
-CMD ["yarn", "prod"]
+CMD ["node", "dist/main"]
