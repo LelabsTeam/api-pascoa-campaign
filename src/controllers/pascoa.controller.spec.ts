@@ -2,6 +2,7 @@ import { PascoaController } from './pascoa.controller';
 import { PascoaService } from '../services/pascoa.service';
 import { StorageRepository } from '../repositories/storage.repository';
 import { AcceptedTermsIsFalse, CoupomUnvailable, UserAlreadyRegisteredInForm } from '../errors';
+import { RedisCacheProvider } from 'src/gateways/database/cache-gateway';
 
 describe('PascoaController', () => {
   let pascoaController: PascoaController;
@@ -13,7 +14,8 @@ describe('PascoaController', () => {
 
     // @ts-ignore
     const storageService = new StorageRepository({ headers });
-    pascoaService = new PascoaService(storageService);
+    const redisService = new RedisCacheProvider();
+    pascoaService = new PascoaService(storageService, redisService);
     pascoaController = new PascoaController(pascoaService);
   });
 

@@ -27,6 +27,9 @@ export class EasterUser {
   @Column({ type: 'varchar' })
     phone: string;
 
+  @Column({ type: 'varchar' })
+    birthday: string;
+
   @CreateDateColumn({ name: 'created_at' })
     created_at: Date;
 

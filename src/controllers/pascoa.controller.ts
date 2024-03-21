@@ -46,6 +46,7 @@ export class PascoaController {
         message: 'user registered with success',
       };
     } catch (err) {
+      console.log(err)
       const isApplicationError = POSSIBLE_APLICATION_ERRORS.some((item) => err instanceof item);
       return {
         data: null,
@@ -74,15 +75,15 @@ export class PascoaController {
     }
   }
 
-  // @Post("/coupons")
-  // async addCoupons(@Body() input: any){
-  //   try{
-  //       await this.pascoaService.saveCoupons(input.coupons)
-  //   }catch(err){
-  //     console.log(err)
-  //   }
-  //   return
-  // }
+  @Post("/coupons")
+  async addCoupons(@Body() input: any){
+    try{
+        await this.pascoaService.saveCoupons(input.coupons)
+    }catch(err){
+      console.log(err)
+    }
+    return
+  }
 
   @Get('/test')
   healthcheck(): string {

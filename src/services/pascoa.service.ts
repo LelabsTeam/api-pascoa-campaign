@@ -22,6 +22,7 @@ export namespace PascoaService {
     cell: string;
     cpf: string;
     acceptedTerms: boolean;
+    birthday: string
   };
   export type RegisterClientRes = void;
 

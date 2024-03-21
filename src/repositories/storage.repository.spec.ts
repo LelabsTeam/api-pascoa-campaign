@@ -1,9 +1,10 @@
-import { Repository  } from 'typeorm';
+import { Repository } from 'typeorm';
 import DataSource from '../gateways/database/ormconfig';
 import { EasterUser } from '../gateways/database/model/EasterUser.model';
 import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
 import { StorageRepository } from './storage.repository';
 import { CoupomUnvailable, UserNotRegisteredInForm } from '../errors';
+
 describe('StorageRepository', () => {
   let userTable: Repository<EasterUser>;
   let couponTable: Repository<EasterCoupon>;
@@ -22,9 +23,9 @@ describe('StorageRepository', () => {
   afterEach(async () => {
     try {
       await userTable.clear();
-      await couponTable.query(`SET FOREIGN_KEY_CHECKS = 0`);
-      await couponTable.query(`TRUNCATE TABLE eastercoupon`);
-      await couponTable.query(`SET FOREIGN_KEY_CHECKS = 1`);
+      await couponTable.query('SET FOREIGN_KEY_CHECKS = 0');
+      await couponTable.query('TRUNCATE TABLE eastercoupon');
+      await couponTable.query('SET FOREIGN_KEY_CHECKS = 1');
     } catch (err) {
       console.log('error:', err);
     }
@@ -37,6 +38,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
 
     await userTable.save(mockUserData);
@@ -58,6 +60,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'LB',
+      birthday: '09/07/2001',
     };
 
     await userTable.save(mockUserData);
@@ -73,6 +76,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: DEFAULT_TENANT,
+      birthday: '09/07/2001',
     };
     const res = await storageService
       .verifyUserAlreadyRegisteredForm({
@@ -89,6 +93,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: DEFAULT_TENANT,
+      birthday: '09/07/2001',
     };
     const response = await userTable.save(mockUserData);
     await couponTable.save({
@@ -105,6 +110,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'LB',
+      birthday: '09/07/2001',
     };
     const response = await userTable.save(mockUserData);
     await couponTable.save({
@@ -121,6 +127,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
 
     await userTable.save(mockUserData);
@@ -135,12 +142,14 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
     await storageService.saveUserForm({
       acceptedTerms: mockUserData.accepted_terms,
       cell: mockUserData.phone,
       cpf: mockUserData.cpf,
       email: mockUserData.email,
+      birthday: mockUserData.birthday,
     });
     const res = await userTable.findOneBy({ email: mockUserData.email });
     expect(res.email).toBe(mockUserData.email);
@@ -153,6 +162,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
     const mockCouponNumber = 'TESTE123';
 
@@ -172,6 +182,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: 'LB',
+      birthday: '09/07/2001',
     };
     const mockCouponNumber = 'TESTE123';
 
@@ -192,6 +203,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino@lelabs.com',
       tenant_id: DEFAULT_TENANT,
+      birthday: '09/07/2001',
     };
     const mockCouponNumber = 'TESTE123';
 
@@ -212,6 +224,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino1@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
     const mockUserData2 = {
       cpf: '53060329826',
@@ -219,6 +232,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino2@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
     const mockUserData3 = {
       cpf: '53060329826',
@@ -226,6 +240,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino3@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
 
     const [mockCouponNumber1, mockCouponNumber2, mockCouponNumber3] = ['COUPONTEST1', 'COUPONTEST2', 'COUPONTEST3'];
@@ -249,6 +264,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino1@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
     await userTable.save([mockUserData1]);
 
@@ -263,6 +279,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino3@lelabs.com',
       tenant_id: 'CV',
+      birthday: '09/07/2001',
     };
 
     const mockCouponNumber = 'COUPONTEST1';
@@ -289,6 +306,7 @@ describe('StorageRepository', () => {
       accepted_terms: true,
       email: 'wellingtonrufino3@lelabs.com',
       tenant_id: 'LB',
+      birthday: '09/07/2001',
     };
 
     const mockCouponNumber = 'COUPONTEST1';
@@ -302,10 +320,10 @@ describe('StorageRepository', () => {
       redeemed_date: new Date().toISOString(),
     });
 
-      try{
-        await storageService.getCouponsByEmail(mockUserData.email);
-      }catch(err){
-        expect(err).toBeInstanceOf(UserNotRegisteredInForm);
-      }
+    try {
+      await storageService.getCouponsByEmail(mockUserData.email);
+    } catch (err) {
+      expect(err).toBeInstanceOf(UserNotRegisteredInForm);
+    }
   });
 });

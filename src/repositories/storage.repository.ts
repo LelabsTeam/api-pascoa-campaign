@@ -2,7 +2,7 @@
 import { IStorageRepository } from 'src/repositories/istorage.repository';
 import { Injectable, Inject, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { IsNull } from 'typeorm';
+import { IsNull, MoreThanOrEqual } from 'typeorm';
 import DataSource from '../gateways/database/ormconfig';
 import { EasterUser } from '../gateways/database/model/EasterUser.model';
 import { EasterCoupon } from '../gateways/database/model/EasterCoupon.model';
@@ -24,10 +24,15 @@ export class StorageRepository implements IStorageRepository {
     return null;
   }
 
-  async saveUserForm(_props: { email: string; cpf: string; cell: string; acceptedTerms: boolean; }): Promise<void> {
+  async saveUserForm(_props: { email: string; cpf: string; cell: string; acceptedTerms: boolean; birthday: string }): Promise<void> {
     const userTable = DataSource.getRepository(EasterUser);
-    const saved = await userTable.save({
-      accepted_terms: _props.acceptedTerms, cpf: _props.cpf, email: _props.email, phone: _props.cell, tenant_id: this.banderName,
+    await userTable.save({
+      accepted_terms: _props.acceptedTerms,
+      cpf: _props.cpf,
+      email: _props.email,
+      phone: _props.cell,
+      tenant_id: this.banderName,
+      birthday: _props.birthday,
     });
   }
 
@@ -55,7 +60,7 @@ export class StorageRepository implements IStorageRepository {
 
   async getCoupom(): Promise<{ expireDate: Date, code: string } | null> {
     const coumpomTable = DataSource.getRepository(EasterCoupon);
-    const res = await coumpomTable.findOne({ where: { user_email: IsNull(), tenant_id: this.banderName } });
+    const res = await coumpomTable.findOne({ where: { user_email: IsNull(), tenant_id: this.banderName, created_at: MoreThanOrEqual(new Date(new Date().toISOString().split('T')[0])) } });
     if (res) {
       return {
         code: res.coupon_number,
@@ -79,7 +84,7 @@ export class StorageRepository implements IStorageRepository {
   async saveCoupons(coupons: string[]): Promise<void> {
     const coumpomTable = DataSource.getRepository(EasterCoupon);
 
-    const formatCoupons = coupons.map(item => ({coupon_number: item, tenant_id: this.banderName}));
+    const formatCoupons = coupons.map((item) => ({ coupon_number: item, tenant_id: this.banderName }));
 
     coumpomTable.save(formatCoupons);
   }

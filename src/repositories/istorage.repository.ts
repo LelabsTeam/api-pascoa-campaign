@@ -1,8 +1,8 @@
 export interface IStorageRepository {
-  getCoupom(): Promise<null | {expireDate: Date, code: string}>
+  getCoupom(): Promise<null | { expireDate: Date, code: string }>
   saveCoupomInUser(email: string, coupomId: string): Promise<void>
   saveUserForm(
-    props: { email: string, cpf: string, cell: string, acceptedTerms: boolean }
+    props: { email: string, cpf: string, cell: string, acceptedTerms: boolean, birthday: string }
   ): Promise<void>
   verifyUserCoupom(email: string): Promise<true | false>
   verifyUserAlreadyRegisteredForm(
